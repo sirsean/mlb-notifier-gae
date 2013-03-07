@@ -1,6 +1,7 @@
 package com.vikinghammer.mlb.notifier.gae.event;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.List;
@@ -168,6 +169,23 @@ public class LeadChangeEventDeterminerTest {
 		assertEquals("one", event.getGameId());
 		assertEquals("AWAY @ HOME", event.getTeams());
 		assertEquals("HOME took the lead in the 7th, 5-3", event.getText());
+	}
+	
+	@Test
+	public void awayHasTheLeadAndScoresAgain() {
+		EventDeterminer determiner = new LeadChangeEventDeterminer(5);
+		
+		Game one = buildGame();
+		one.getStatus().setInning("6");
+		one.getScore().getRuns().setAway(3);
+		one.getScore().getRuns().setHome(1);
+		
+		Game two = one.dup();
+		two.getStatus().setInning("6");
+		two.getScore().getRuns().setAway(5);
+		
+		List<Event> events = determiner.determine(one, two);
+		assertTrue(events.isEmpty());
 	}
 	
 	private Game buildGame() {
