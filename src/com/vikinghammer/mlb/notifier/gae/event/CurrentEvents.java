@@ -21,7 +21,8 @@ public class CurrentEvents {
 	static {
 		determiners = new EventDeterminer[] {
 				new LeadChangeEventDeterminer(7),
-				new PitcherEventDeterminer(5)
+				new PitcherEventDeterminer(5),
+				new BatterEventDeterminer()
 		};
 	}
 	

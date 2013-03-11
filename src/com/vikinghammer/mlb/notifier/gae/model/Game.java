@@ -46,6 +46,12 @@ public class Game {
 	private List<Pitcher> homePitchers;
 	
 	@Embedded
+	private List<Batter> awayBatters;
+	
+	@Embedded
+	private List<Batter> homeBatters;
+	
+	@Embedded
 	private LineScore score;
 	
 	public Team currentLeader() {
@@ -90,6 +96,20 @@ public class Game {
 			}
 		}
 		game.setHomePitchers(dupHomePitchers);
+		List<Batter> dupAwayBatters = new ArrayList<Batter>();
+		if (awayBatters != null) {
+			for (Batter batter : awayBatters) {
+				dupAwayBatters.add(batter.dup());
+			}
+		}
+		game.setAwayBatters(dupAwayBatters);
+		List<Batter> dupHomeBatters = new ArrayList<Batter>();
+		if (homeBatters != null) {
+			for (Batter batter : homeBatters) {
+				dupHomeBatters.add(batter.dup());
+			}
+		}
+		game.setHomeBatters(dupHomeBatters);
 		if (score != null) {
 			game.setScore(score.dup());
 		}
@@ -150,6 +170,27 @@ public class Game {
 				}
 			}
 		}
+		awayBatters = new ArrayList<Batter>();
+		homeBatters = new ArrayList<Batter>();
+		if (map.containsKey("batting")) {
+			List<Map<String, Object>> batting = (List<Map<String, Object>>)map.get("batting");
+			if (batting.size() >= 1) {
+				List<Map<String, Object>> batters = getBatters(batting.get(0));
+				for (Map<String, Object> batterMap : batters) {
+					Batter batter = new Batter();
+					batter.merge(batterMap);
+					awayBatters.add(batter);
+				}
+			}
+			if (batting.size() >= 2) {
+				List<Map<String, Object>> batters = getBatters(batting.get(1));
+				for (Map<String, Object> batterMap : batters) {
+					Batter batter = new Batter();
+					batter.merge(batterMap);
+					homeBatters.add(batter);
+				}
+			}
+		}
 	}
 
 	private List<Map<String, Object>> getPitchers(Map<String, Object> pitching) {
@@ -159,6 +200,17 @@ public class Game {
 		} else {
 			pitchers = new ArrayList<Map<String, Object>>();
 			pitchers.add((Map<String, Object>)pitching.get("pitcher"));
+		}
+		return pitchers;
+	}
+	
+	private List<Map<String, Object>> getBatters(Map<String, Object> pitching) {
+		List<Map<String, Object>> pitchers;
+		if (pitching.get("batter") instanceof List) {
+			pitchers = (List<Map<String, Object>>)pitching.get("batter");
+		} else {
+			pitchers = new ArrayList<Map<String, Object>>();
+			pitchers.add((Map<String, Object>)pitching.get("batter"));
 		}
 		return pitchers;
 	}
